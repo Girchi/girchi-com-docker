@@ -50,9 +50,13 @@ update-ui:
 install-full:
 	@make setup
 	@make install-drupal
+	@make install-node
 
 install-drupal:
 	./scripts/install-drupal.sh
+
+install-node:
+	./scripts/install-node.sh
 
 setup:
 	@mkdir -p services

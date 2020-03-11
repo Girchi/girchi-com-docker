@@ -14,6 +14,23 @@ services:
 #      - ./mariadb-init:/docker-entrypoint-initdb.d # Place init .sql file(s) here.
 #      - /path/to/mariadb/data/on/host:/var/lib/mysql # Use bind mount
 
+  notifications.db:
+    container_name: "${PROJECT_NAME}_notifications_db"
+    image: "mongo:3.4.19-jessie"
+    restart: "unless-stopped"
+    labels:
+      - traefik.enable=false
+    networks:
+      default:
+        aliases:
+          - db.notifications.girchi.localhost
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: "root"
+    #   MONGO_INITDB_ROOT_PASSWORD: "pass"
+    expose:
+      - "27017"
+    volumes:
+      - "girchi.notifications.db-data:/data/db"
 
   php:
     image: wodby/drupal-php:$PHP_TAG
@@ -200,19 +217,19 @@ services:
 #      WEAVER_WORKER_TIMEOUT: 90
 #      WEAVER_CONVERSION_FALLBACK: "false"
 
-#  node:
-#    image: wodby/node:$NODE_TAG
-#    container_name: "${PROJECT_NAME}_node"
-#    working_dir: /var/www/html/path/to/theme/to/build
-#    labels:
-#      - 'traefik.backend=${PROJECT_NAME}_node'
-#      - 'traefik.port=3000'
-#      - 'traefik.frontend.rule=Host:front.${PROJECT_BASE_URL}'
-#    expose:
-#      - "3000"
-#    volumes:
-#      - ./:/var/www/html
-#    command: sh -c 'yarn install && yarn run start'
+  node:
+    image: wodby/node
+    container_name: "${PROJECT_NAME}_node"
+    working_dir: /var/www/html
+    labels:
+      - 'traefik.backend=${PROJECT_NAME}_node'
+      - 'traefik.port=3000'
+      - 'traefik.frontend.rule=Host:front.${PROJECT_BASE_URL}'
+    expose:
+      - "3000"
+    volumes:
+      - ./services/${NODE_TITLE}/:/var/www/html
+    command: sh -c 'yarn install && yarn run start'
 
   ui_builder:
     image: node:$NODE_TAG
@@ -304,6 +321,9 @@ services:
     volumes:
       - ./services/${D8_TITLE}/certs:/certs
 
+
+volumes:
+  girchi.notifications.db-data:
 
 #volumes:
 ## Docker-sync for macOS users
