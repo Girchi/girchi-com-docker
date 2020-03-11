@@ -222,15 +222,14 @@ services:
     container_name: "${PROJECT_NAME}_node"
     working_dir: /var/www/html
     labels:
-      - 'traefik.backend=${PROJECT_NAME}_node'
-      - 'traefik.port=3000'
-      - 'traefik.frontend.rule=Host:front.${PROJECT_BASE_URL}'
+      - "traefik.http.services.static_${PROJECT_NAME}_node.loadbalancer.server.port=4000"
+      - "traefik.http.routers.static_${PROJECT_NAME}_node.rule=Host(`static.${PROJECT_BASE_URL}`)"
     expose:
-      - "3000"
+      - "4000"
     volumes:
       - ./services/${NODE_TITLE}/:/var/www/html
-    command: sh -c 'yarn install && yarn run start'
-
+    command: sh -c 'yarn install && yarn run start && tail -f /dev/null'
+   
   ui_builder:
     image: node:$NODE_TAG
     container_name: "${PROJECT_NAME}_ui_builder"
