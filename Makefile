@@ -29,6 +29,9 @@ ps:
 shell-drupal:
 	docker exec -ti -e COLUMNS=$(shell tput cols) -e LINES=$(shell tput lines) $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") sh
 
+shell-notifications:
+	@docker exec -it --user node  $(shell docker ps --filter name='$(PROJECT_NAME)_node' --format "{{ .ID }}") bash
+
 drush:
 	docker exec $(shell docker ps --filter name='^/$(PROJECT_NAME)_php' --format "{{ .ID }}") drush -r $(DRUPAL_ROOT) $(filter-out $@,$(MAKECMDGOALS))
 

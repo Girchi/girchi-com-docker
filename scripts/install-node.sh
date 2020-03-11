@@ -2,8 +2,10 @@
 
 FILE=../services/girchi-com-notifications-server/package-lock.json
 
-if [-f "$FILE"]; then
-    docker exec -ti girchi_node npm ci
+docker exec -it  --user node girchi_node cp .env.dist .env
+
+if [ -f "$FILE" ]; then
+    docker exec -ti --user node girchi_node  npm ci
 else
-    docker exec -ti girchi_node npm i
+    docker exec -ti --user node girchi_node  npm i
 fi

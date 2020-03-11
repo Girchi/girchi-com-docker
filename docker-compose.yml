@@ -218,17 +218,18 @@ services:
 #      WEAVER_CONVERSION_FALLBACK: "false"
 
   node:
-    image: wodby/node
+    image: node:10.19.0-stretch
     container_name: "${PROJECT_NAME}_node"
     working_dir: /var/www/html
     labels:
-      - "traefik.http.services.static_${PROJECT_NAME}_node.loadbalancer.server.port=4000"
-      - "traefik.http.routers.static_${PROJECT_NAME}_node.rule=Host(`static.${PROJECT_BASE_URL}`)"
+      - 'traefik.backend=${PROJECT_NAME}_node'
+      - 'traefik.port=3000'
+      - 'traefik.frontend.rule=Host:notifications.${PROJECT_BASE_URL}'
     expose:
-      - "4000"
+      - "3000"
     volumes:
       - ./services/${NODE_TITLE}/:/var/www/html
-    command: sh -c 'yarn install && yarn run start && tail -f /dev/null'
+    command: sh -c 'tail -f /dev/null'
    
   ui_builder:
     image: node:$NODE_TAG
